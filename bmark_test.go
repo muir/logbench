@@ -51,6 +51,17 @@ func BenchmarkDisableZap(b *testing.B) {
 	}
 }
 
+func BenchmarkDisableZapSugar(b *testing.B) {
+	logger := zap.New(zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		zapcore.AddSync(ioutil.Discard),
+		zapcore.InfoLevel,
+	)).Sugar()
+	for i := 0; i < b.N; i++ {
+		logger.Debugw(msg, "rate", "15", "low", 16, "high", 123.2)
+	}
+}
+
 func BenchmarkDisableZeroLog(b *testing.B) {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	logger := zerolog.New(ioutil.Discard).With().Timestamp().Logger()
@@ -110,6 +121,17 @@ func BenchmarkNormalZap(b *testing.B) {
 	}
 }
 
+func BenchmarkNormalZapSugar(b *testing.B) {
+	logger := zap.New(zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		zapcore.AddSync(ioutil.Discard),
+		zapcore.InfoLevel,
+	)).Sugar()
+	for i := 0; i < b.N; i++ {
+		logger.Infow(msg, "rate", "15", "low", 16, "high", 123.2)
+	}
+}
+
 func BenchmarkNormalZeroLog(b *testing.B) {
 	logger := zerolog.New(ioutil.Discard).With().Timestamp().Logger()
 	for i := 0; i < b.N; i++ {
@@ -162,6 +184,17 @@ func BenchmarkInterfaceZap(b *testing.B) {
 		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
 		zapcore.AddSync(ioutil.Discard),
 		zapcore.InfoLevel,
+	))
+	for i := 0; i < b.N; i++ {
+		logger.Info(msg, zap.Any("object", &obj))
+	}
+}
+
+func BenchmarkInterfaceZapSugar(b *testing.B) {
+	logger := zap.New(zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		zapcore.AddSync(ioutil.Discard),
+		zapcore.InfoLevel,
 	)).Sugar()
 	for i := 0; i < b.N; i++ {
 		logger.Infow(msg, "object", &obj)
@@ -204,7 +237,7 @@ func BenchmarkPrintfXop(b *testing.B) {
 	logger.Done()
 }
 
-func BenchmarkPrintfZap(b *testing.B) {
+func BenchmarkPrintfZapSugar(b *testing.B) {
 	logger := zap.New(zapcore.NewCore(
 		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
 		zapcore.AddSync(ioutil.Discard),

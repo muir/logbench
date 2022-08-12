@@ -19,4 +19,8 @@ jobs:
     - name: Test
       run: go test ./...
     - name: Benchmark
-      run: go test -v -cpu=4 -run=none -bench=. -benchtime=10s -benchmem bmark_test.go
+      run: |
+        go test -v -cpu=4 -run=none -bench=. -benchtime=10s -benchmem bmark_test.go | tee x
+	perl scripts/resultsToMarkdown.pl x
+
+
