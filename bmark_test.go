@@ -70,7 +70,7 @@ func BenchmarkDisableZeroLog(b *testing.B) {
 	}
 }
 
-func BenchmarkDisableOneLog(b *testing.B) {
+func BenchmarkDisableOneLogNoTime(b *testing.B) {
 	logger := onelog.New(ioutil.Discard, onelog.INFO|onelog.WARN|onelog.ERROR|onelog.FATAL)
 	for i := 0; i < b.N; i++ {
 		logger.DebugWithFields(msg, func(e onelog.Entry) {
@@ -81,7 +81,7 @@ func BenchmarkDisableOneLog(b *testing.B) {
 	}
 }
 
-func BenchmarkDisableOneLogChain(b *testing.B) {
+func BenchmarkDisableOneLogNTChain(b *testing.B) {
 	logger := onelog.New(ioutil.Discard, onelog.INFO|onelog.WARN|onelog.ERROR|onelog.FATAL)
 	for i := 0; i < b.N; i++ {
 		logger.DebugWith(msg).String("rate", "15").Int("low", 16).Float("high", 123.2).Write()
@@ -165,14 +165,14 @@ func BenchmarkNormalOneLogNoTime(b *testing.B) {
 	}
 }
 
-func BenchmarkNormalOneLogChain(b *testing.B) {
+func BenchmarkNormalOneLogNTChain(b *testing.B) {
 	logger := onelog.New(ioutil.Discard, onelog.INFO|onelog.WARN|onelog.ERROR|onelog.FATAL)
 	for i := 0; i < b.N; i++ {
 		logger.InfoWith(msg).String("rate", "15").Int("low", 16).Float("high", 123.2).Write()
 	}
 }
 
-func BenchmarkNormalOneLogTimestamp(b *testing.B) {
+func BenchmarkNormalOneLogWithTime(b *testing.B) {
 	logger := onelog.New(ioutil.Discard, onelog.INFO|onelog.WARN|onelog.ERROR|onelog.FATAL)
 	logger.Hook(func(e onelog.Entry) {
 		e.String("time", time.Now().Format(time.RFC3339))
@@ -237,7 +237,7 @@ func BenchmarkInterfaceZeroLog(b *testing.B) {
 	}
 }
 
-func BenchmarkInterfaceOneLogChain(b *testing.B) {
+func BenchmarkInterfaceOneLogNTChain(b *testing.B) {
 	logger := onelog.New(ioutil.Discard, onelog.INFO|onelog.WARN|onelog.ERROR|onelog.FATAL)
 	for i := 0; i < b.N; i++ {
 		logger.InfoWith(msg).Any("object", &obj).Write()
