@@ -20,7 +20,8 @@ while (<>) {
 	my @cols = split(/\t/, $_);
 	$cols[0] =~ s/-\d+\s*$//;
 	foreach (@cols) {
-		s/\s\s+/ /g;
+		s/^\s+//;
+		s/\s+$//;
 		chomp;
 		s/^\s//;
 		$_ = ( " "x (15 - length($_) )) . $_
