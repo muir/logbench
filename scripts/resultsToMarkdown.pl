@@ -12,8 +12,8 @@ while (<>) {
 		print "\n";
 		print "### $group\n";
 		print "\n";
-		print "| Logger      | Rate        | Memory      | Allocations |\n";
-		print "| ----------- | ----------- | ----------- | ----------- |\n";
+		print "| Logger          | Rate            | Memory total    | Allocations |\n";
+		print "| --------------- | --------------- | --------------- | --------------- |\n";
 		$lastgroup = $group
 	}
 	chomp;
@@ -23,12 +23,10 @@ while (<>) {
 		s/\s\s+/ /g;
 		chomp;
 		s/^\s//;
-		$_ = ( " "x (11 - length($_) )) . $_
+		$_ = ( " "x (15 - length($_) )) . $_
 	}
 	print "| $cols[0] | $cols[2] | $cols[3] | $cols[4] |\n";
 }
-
-
 
 __END__
 BenchmarkDisableXop
