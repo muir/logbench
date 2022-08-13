@@ -3,6 +3,7 @@
 package xop_test
 
 import (
+	"context"
 	"io/ioutil"
 	"testing"
 	"time"
@@ -14,6 +15,12 @@ import (
 	"github.com/muir/xop-go/xopjson"
 	"github.com/phuslu/log"
 	"github.com/rs/zerolog"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/sdk/resource"
+	"go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -332,5 +339,103 @@ func BenchmarkCallerPhusLog(b *testing.B) {
 	logger := log.Logger{Caller: 1, Writer: log.IOWriter{ioutil.Discard}}
 	for i := 0; i < b.N; i++ {
 		logger.Info().Str("rate", "15").Int("low", 16).Float32("high", 123.2).Msg(msg)
+	}
+}
+
+func BenchmarkEmptyXop(b *testing.B) {
+	seed := xop.NewSeed(xop.WithBase(
+		xopjson.New(
+			xopbytes.WriteToIOWriter(ioutil.Discard),
+			xopjson.WithEpochTime(time.Nanosecond),
+			xopjson.WithDurationFormat(xopjson.AsNanos),
+			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
+			xopjson.WithAttributesObject(false))))
+	for i := 0; i < b.N; i++ {
+		seed.Request("empty").Done()
+	}
+}
+
+func BenchmarkEmptyOTEL(b *testing.B) {
+	exp, err := stdouttrace.New(
+		stdouttrace.WithWriter(ioutil.Discard),
+	)
+	if err != nil {
+		b.FailNow()
+	}
+	r, _ := resource.Merge(
+		resource.Default(),
+		resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceNameKey.String("fib"),
+			semconv.ServiceVersionKey.String("v0.1.0"),
+			attribute.String("environment", "demo"),
+		),
+	)
+	tp := trace.NewTracerProvider(
+		trace.WithBatcher(exp),
+		trace.WithResource(r),
+	)
+	defer func() {
+		_ = tp.Shutdown(context.Background())
+	}()
+	otel.SetTracerProvider(tp)
+
+	ctx := context.Background()
+	for i := 0; i < b.N; i++ {
+		_, span := otel.Tracer("name").Start(ctx, "Run")
+		span.End()
+	}
+}
+
+func BenchmarkTenspanXop(b *testing.B) {
+	seed := xop.NewSeed(xop.WithBase(
+		xopjson.New(
+			xopbytes.WriteToIOWriter(ioutil.Discard),
+			xopjson.WithEpochTime(time.Nanosecond),
+			xopjson.WithDurationFormat(xopjson.AsNanos),
+			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
+			xopjson.WithAttributesObject(false))))
+	for i := 0; i < b.N; i++ {
+		request := seed.Request("empty")
+		for j := 0; j < 10; j++ {
+			request.Sub().Step("subspan").Wait().Done()
+		}
+		request.Done()
+	}
+}
+
+func BenchmarkTenspanOTEL(b *testing.B) {
+	exp, err := stdouttrace.New(
+		stdouttrace.WithWriter(ioutil.Discard),
+	)
+	if err != nil {
+		b.FailNow()
+	}
+	r, _ := resource.Merge(
+		resource.Default(),
+		resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceNameKey.String("fib"),
+			semconv.ServiceVersionKey.String("v0.1.0"),
+			attribute.String("environment", "demo"),
+		),
+	)
+	tp := trace.NewTracerProvider(
+		trace.WithBatcher(exp),
+		trace.WithResource(r),
+	)
+	defer func() {
+		_ = tp.Shutdown(context.Background())
+	}()
+	otel.SetTracerProvider(tp)
+
+	ctx := context.Background()
+	for i := 0; i < b.N; i++ {
+		ctx, span := otel.Tracer("name").Start(ctx, "Run")
+		for j := 0; j < 10; j++ {
+			_, span := otel.Tracer("inner").Start(ctx, "Run")
+			span.End()
+		}
+		span.End()
 	}
 }

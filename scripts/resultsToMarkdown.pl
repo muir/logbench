@@ -2,6 +2,16 @@
 
 my $lastgroup;
 
+my %explanation = (
+	"Disable" => "When the log level is too low for the line to be output",
+	"Normal" => "One line with three attributes",
+	"Interface" => "A line with a generic object that has three fields",
+	"Printf" => "A line generated with printf",
+	"Caller" => "A with three attributes and one stack frame",
+	"Empty" => "The overhead of starting a trace/span for a new request",
+	"Tenspan" => "The overhead of starting a trace/span for a new request AND ten sub-spans",
+);
+
 while (<>) {
 	next unless /allocs/;
 	next unless s/^Benchmark//;
@@ -11,8 +21,8 @@ while (<>) {
 	if ($group ne $lastgroup) {
 		print "\n";
 		print "### $group\n";
-		print "\n";
-		print "| Logger          | Rate            | Memory total    | Allocations |\n";
+		print "\n$explanation{$group}\n\n";
+		print "| Logger          | Rate            | Memory total    | Allocations     |\n";
 		print "| --------------- | --------------- | --------------- | --------------- |\n";
 		$lastgroup = $group
 	}
