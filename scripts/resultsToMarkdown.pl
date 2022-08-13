@@ -5,7 +5,7 @@ my $lastgroup;
 my %explanation = (
 	"Disable" => "When the log level is too low for the line to be output",
 	"Normal" => "One line with three attributes",
-	"Interface" => "A line with a generic object that has three fields",
+	"Interface" => "A line with a generic object that has three fields.  Note: Onelog can only serialize simple objects.",
 	"Printf" => "A line generated with printf",
 	"Caller" => "A with three attributes and one stack frame",
 	"Empty" => "The overhead of starting a trace/span for a new request",
