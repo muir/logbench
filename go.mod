@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
-	github.com/muir/xop-go v0.0.0-20220812174526-adcb3cd71766
+	github.com/muir/xop-go v0.0.0-20220813055912-f67961e60c86
 	github.com/phuslu/log v1.0.81
 	github.com/rs/zerolog v1.27.0
 	go.opentelemetry.io/otel v1.9.0
