@@ -11,8 +11,8 @@ import (
 	"github.com/francoispqt/onelog"
 	"github.com/muir/xop-go"
 	"github.com/muir/xop-go/xopbytes"
-	"github.com/muir/xop-go/xopconst"
 	"github.com/muir/xop-go/xopjson"
+	"github.com/muir/xop-go/xopnum"
 	"github.com/phuslu/log"
 	"github.com/rs/zerolog"
 	"go.opentelemetry.io/otel"
@@ -308,7 +308,7 @@ func BenchmarkCallerXop(b *testing.B) {
 			xopjson.WithAttributesObject(false)))).
 		Request("caller").
 		Sub().
-		StackFrames(xopconst.InfoLevel, 1).
+		StackFrames(xopnum.InfoLevel, 1).
 		Log()
 	for i := 0; i < b.N; i++ {
 		logger.Info().String("rate", "15").Int("low", 16).Float32("high", 123.2).Msg(msg)
@@ -398,7 +398,7 @@ func BenchmarkTenspanXop(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		request := seed.Request("empty")
 		for j := 0; j < 10; j++ {
-			request.Sub().Step("subspan").Wait().Done()
+			request.Sub().Detach().Step("subspan").Done()
 		}
 		request.Done()
 	}
