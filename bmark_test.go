@@ -357,7 +357,7 @@ func BenchmarkEmptyXop(b *testing.B) {
 	}
 }
 
-func BenchmarkEmptyOTEL(b *testing.B) {
+func BenchmarkEmptyOTELStdout(b *testing.B) {
 	b.StopTimer()
 	exp, err := stdouttrace.New(
 		stdouttrace.WithWriter(ioutil.Discard),
@@ -411,7 +411,7 @@ func BenchmarkTenspanXop(b *testing.B) {
 	}
 }
 
-func BenchmarkTenspanOTEL(b *testing.B) {
+func BenchmarkTenspanOTELStdout(b *testing.B) {
 	b.StopTimer()
 	exp, err := stdouttrace.New(
 		stdouttrace.WithWriter(ioutil.Discard),
