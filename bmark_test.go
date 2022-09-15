@@ -343,6 +343,7 @@ func BenchmarkCallerPhusLog(b *testing.B) {
 }
 
 func BenchmarkEmptyXop(b *testing.B) {
+	b.StopTimer()
 	seed := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
@@ -350,12 +351,14 @@ func BenchmarkEmptyXop(b *testing.B) {
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false))))
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		seed.Request("empty").Done()
 	}
 }
 
 func BenchmarkEmptyOTEL(b *testing.B) {
+	b.StopTimer()
 	exp, err := stdouttrace.New(
 		stdouttrace.WithWriter(ioutil.Discard),
 	)
@@ -381,13 +384,16 @@ func BenchmarkEmptyOTEL(b *testing.B) {
 	otel.SetTracerProvider(tp)
 
 	ctx := context.Background()
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		_, span := otel.Tracer("name").Start(ctx, "Run")
 		span.End()
+		tp.ForceFlush(ctx)
 	}
 }
 
 func BenchmarkTenspanXop(b *testing.B) {
+	b.StopTimer()
 	seed := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
@@ -395,6 +401,7 @@ func BenchmarkTenspanXop(b *testing.B) {
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false))))
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		request := seed.Request("empty")
 		for j := 0; j < 10; j++ {
@@ -405,6 +412,7 @@ func BenchmarkTenspanXop(b *testing.B) {
 }
 
 func BenchmarkTenspanOTEL(b *testing.B) {
+	b.StopTimer()
 	exp, err := stdouttrace.New(
 		stdouttrace.WithWriter(ioutil.Discard),
 	)
@@ -430,6 +438,7 @@ func BenchmarkTenspanOTEL(b *testing.B) {
 	otel.SetTracerProvider(tp)
 
 	ctx := context.Background()
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		ctx, span := otel.Tracer("name").Start(ctx, "Run")
 		for j := 0; j < 10; j++ {
@@ -437,5 +446,7 @@ func BenchmarkTenspanOTEL(b *testing.B) {
 			span.End()
 		}
 		span.End()
+		tp.ForceFlush(ctx)
 	}
+	b.StopTimer()
 }
