@@ -384,9 +384,10 @@ func BenchmarkEmptyOTELStdout(b *testing.B) {
 	otel.SetTracerProvider(tp)
 
 	ctx := context.Background()
+	tracer := otel.Tracer("name")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		_, span := otel.Tracer("name").Start(ctx, "Run")
+		_, span := tracer.Start(ctx, "Run")
 		span.End()
 		tp.ForceFlush(ctx)
 	}
@@ -438,9 +439,10 @@ func BenchmarkTenspanOTELStdout(b *testing.B) {
 	otel.SetTracerProvider(tp)
 
 	ctx := context.Background()
+	tracer := otel.Tracer("name")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		ctx, span := otel.Tracer("name").Start(ctx, "Run")
+		ctx, span := tracer.Start(ctx, "Run")
 		for j := 0; j < 10; j++ {
 			_, span := otel.Tracer("inner").Start(ctx, "Run")
 			span.End()
