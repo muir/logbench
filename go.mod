@@ -1,10 +1,9 @@
-module github.com/muir/logbench
+module github.com/xoplog/logbench
 
 go 1.18
 
 require (
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
-	github.com/muir/xop-go v0.0.0-20220921052313-eeeaed7f4fe1
 	github.com/phuslu/log v1.0.82-0.20220814091855-3b3ce24e3ecd
 	github.com/rs/zerolog v1.28.1-0.20220918145356-55aaf043cf4d
 	go.opentelemetry.io/otel v1.10.0
@@ -22,6 +21,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/phuslu/fasttime v1.0.0 // indirect
+	github.com/xoplog/xop-go v0.0.0-20221003041314-a8a40060f703 // indirect
 	go.opentelemetry.io/otel/trace v1.10.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect

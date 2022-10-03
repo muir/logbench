@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/francoispqt/onelog"
-	"github.com/muir/xop-go"
-	"github.com/muir/xop-go/xopbytes"
-	"github.com/muir/xop-go/xopjson"
-	"github.com/muir/xop-go/xopnum"
 	"github.com/phuslu/log"
 	"github.com/rs/zerolog"
+	"github.com/xoplog/xop-go"
+	"github.com/xoplog/xop-go/xopbytes"
+	"github.com/xoplog/xop-go/xopjson"
+	"github.com/xoplog/xop-go/xopnum"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -36,7 +36,6 @@ func BenchmarkDisableXop(b *testing.B) {
 	logger := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithEpochTime(time.Microsecond),
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false)))).
@@ -102,26 +101,10 @@ func BenchmarkDisablePhusLog(b *testing.B) {
 	}
 }
 
-func BenchmarkNormalXopMilli(b *testing.B) {
+func BenchmarkNormalXop(b *testing.B) {
 	logger := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithEpochTime(time.Microsecond),
-			xopjson.WithDuration("dur", xopjson.AsString),
-			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
-			xopjson.WithAttributesObject(false)))).
-		Request("normal")
-	for i := 0; i < b.N; i++ {
-		logger.Info().String("rate", "15").Int("low", 16).Float32("high", 123.2).Msg(msg)
-	}
-	logger.Done()
-}
-
-func BenchmarkNormalXop3339(b *testing.B) {
-	logger := xop.NewSeed(xop.WithBase(
-		xopjson.New(
-			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithStrftime("%Y-%m-%dT%k:%M:%S %z"),
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false)))).
@@ -204,7 +187,6 @@ func BenchmarkInterfaceXop(b *testing.B) {
 	logger := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithEpochTime(time.Microsecond),
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false)))).
@@ -262,7 +244,6 @@ func BenchmarkPrintfXop(b *testing.B) {
 	logger := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithEpochTime(time.Microsecond),
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false)))).
@@ -302,7 +283,6 @@ func BenchmarkCallerXop(b *testing.B) {
 	logger := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithEpochTime(time.Microsecond),
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false)))).
@@ -347,7 +327,6 @@ func BenchmarkEmptyXop(b *testing.B) {
 	seed := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithEpochTime(time.Microsecond),
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false))))
@@ -398,7 +377,6 @@ func BenchmarkTenspanXop(b *testing.B) {
 	seed := xop.NewSeed(xop.WithBase(
 		xopjson.New(
 			xopbytes.WriteToIOWriter(ioutil.Discard),
-			xopjson.WithEpochTime(time.Microsecond),
 			xopjson.WithDuration("dur", xopjson.AsString),
 			xopjson.WithSpanTags(xopjson.SpanIDTagOption),
 			xopjson.WithAttributesObject(false))))
